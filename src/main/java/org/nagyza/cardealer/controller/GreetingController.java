@@ -9,7 +9,7 @@ public class GreetingController {
 
     @GetMapping(path = "/hello")
     public String getGreeting() {
-        Car car = new Car("Toyota", "Corolla");
+        Car car = new Car(1L,"Toyota", "Corolla");
         return "Hello user \n You can buy a " + car.getBrand() + " " + car.getType();
     }
 }
