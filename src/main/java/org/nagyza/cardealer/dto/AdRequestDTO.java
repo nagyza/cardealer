@@ -1,12 +1,13 @@
 package org.nagyza.cardealer.dto;
 
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 public class AdRequestDTO {
 
     @NotNull
-    @Size(min = 1, max = 50)
+    @Size(min = 1, max = 20)
     private String brand;
 
     @NotNull
@@ -17,6 +18,7 @@ public class AdRequestDTO {
     private String description;
 
     @NotNull
+    @Max(value = 9999999999L)
     private Long price;
 
     public AdRequestDTO(String brand, String type, String description, Long price) {
