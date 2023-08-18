@@ -11,11 +11,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AdService {
 
-    Logger logger = LoggerFactory.getLogger(AdService.class);
+    private final Logger logger = LoggerFactory.getLogger(AdService.class);
     private final AdRepository adRepository;
 
     @Autowired
@@ -23,12 +24,12 @@ public class AdService {
         this.adRepository = adRepository;
     }
 
-    public List<Ad> getAllAds() {
-        return List.of();
-    }
-
-    public List<Ad> searchAds(String searchTerm) {
-        return List.of();
+    public List<String> searchAds(String query) {
+        List<Ad> ads = adRepository.searchAds(query);
+        final String adBasePath = "http://localhost:8080/ad/";
+        return ads.stream()
+                .map(ad -> adBasePath + ad.getId())
+                .collect(Collectors.toList());
     }
 
     public AdDTO getAd(Long id) {
@@ -54,10 +55,10 @@ public class AdService {
     }
 
     public void deleteAd(Long id) throws Exception {
-
+        adRepository.deleteById(id);
     }
 
-    public Ad updateAd(Ad ad) {
-        return ad;
+    public boolean isExist(Long id) {
+        return adRepository.existsById(id);
     }
 }

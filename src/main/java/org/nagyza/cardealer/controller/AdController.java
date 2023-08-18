@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 public class AdController {
-    Logger logger = LoggerFactory.getLogger(AdController.class);
+    private final Logger logger = LoggerFactory.getLogger(AdController.class);
 
     private final AdService adService;
 
@@ -27,18 +27,22 @@ public class AdController {
         this.adService = adService;
     }
 
-    @GetMapping(path = "ad/{id}")
+    @GetMapping(path = "ad/{id}", produces = "application/json")
     public ResponseEntity<AdDTO> getAd(@PathVariable(name = "id") Long id) {
 
         logger.info("Get ad called. Id is: " + id);
         AdDTO ad = adService.getAd(id);
-        logger.info(ad.toString());
+        if (ad != null) {
+            logger.info(ad.toString());
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); //todo
+        }
         return new ResponseEntity<>(ad, HttpStatus.OK);
     }
 
-    @GetMapping(path = "ad/search")
-    public ResponseEntity<List<String>> searchAd(String term) {
-        return null;
+    @GetMapping(path = "ad/search", produces = "application/json")
+    public ResponseEntity<List<String>> searchAd(@RequestParam(name = "query") String query) {
+        return new ResponseEntity<>(adService.searchAds(query), HttpStatus.OK);
     }
 
     @PostMapping(path = "ad", consumes = "application/json", produces = "application/json")
@@ -49,6 +53,16 @@ public class AdController {
         if (ad != null) {
             URI uri = new URI(adBasePath + ad.getId());
             return new ResponseEntity<>(uri ,HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST); //todo
+    }
+
+    @DeleteMapping(path = "ad/{id}")
+    public ResponseEntity<?> deleteAd(@PathVariable(name = "id") Long id) throws Exception {
+        if (adService.isExist(id)) {
+            //todo check owner
+            adService.deleteAd(id);
+            return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST); //todo
     }
