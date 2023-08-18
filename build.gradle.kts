@@ -16,6 +16,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:2.7.2")
 //    implementation("org.springframework.boot:spring-boot-starter-security:2.7.2")
     implementation("org.springframework.boot:spring-boot-starter-web:2.7.2")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
 
     implementation("org.springframework.session:spring-session-core:2.7.2")
     implementation("org.springframework.boot:spring-boot-devtools:2.7.2")
