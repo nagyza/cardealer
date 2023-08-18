@@ -1,8 +1,11 @@
 package org.nagyza.cardealer.service;
 
 import org.nagyza.cardealer.dto.AdDTO;
+import org.nagyza.cardealer.dto.AdRequestDTO;
 import org.nagyza.cardealer.model.Ad;
 import org.nagyza.cardealer.repository.AdRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +15,7 @@ import java.util.Optional;
 @Service
 public class AdService {
 
+    Logger logger = LoggerFactory.getLogger(AdService.class);
     private final AdRepository adRepository;
 
     @Autowired
@@ -44,8 +48,9 @@ public class AdService {
         return result;
     }
 
-    public void postAd(Ad ad) {
-
+    public Ad postAd(AdRequestDTO adRequestDTO) {
+        logger.info(adRequestDTO.toString());
+        return adRepository.save(new Ad(adRequestDTO.getBrand(), adRequestDTO.getType(), adRequestDTO.getDescription(), adRequestDTO.getPrice(), "user"));
     }
 
     public void deleteAd(Long id) throws Exception {

@@ -1,6 +1,7 @@
 package org.nagyza.cardealer.controller;
 
 import org.nagyza.cardealer.dto.AdDTO;
+import org.nagyza.cardealer.dto.AdRequestDTO;
 import org.nagyza.cardealer.model.Ad;
 import org.nagyza.cardealer.service.AdService;
 import org.slf4j.Logger;
@@ -8,12 +9,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class AdController {
@@ -40,4 +41,15 @@ public class AdController {
         return null;
     }
 
+    @PostMapping(path = "ad", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<URI> addAd(@RequestBody @Valid AdRequestDTO adRequestDTO) throws URISyntaxException {
+        String adBasePath = "http://localhost:8080/ad/";
+        Ad ad = adService.postAd(adRequestDTO);
+
+        if (ad != null) {
+            URI uri = new URI(adBasePath + ad.getId());
+            return new ResponseEntity<>(uri ,HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST); //todo
+    }
 }

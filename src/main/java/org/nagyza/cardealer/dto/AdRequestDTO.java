@@ -1,44 +1,29 @@
-package org.nagyza.cardealer.model;
+package org.nagyza.cardealer.dto;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
-@Entity(name="ads")
-public class Ad {
+public class AdRequestDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
+    @NotNull
+    @Size(min = 1, max = 50)
     private String brand;
 
+    @NotNull
+    @Size(min = 1, max = 20)
     private String type;
 
+    @Size(max = 200)
     private String description;
 
+    @NotNull
     private Long price;
 
-    private String seller;
-
-    public Ad(String brand, String type, String description, Long price, String seller) {
+    public AdRequestDTO(String brand, String type, String description, Long price) {
         this.brand = brand;
         this.type = type;
         this.description = description;
         this.price = price;
-        this.seller = seller;
-    }
-
-    public Ad() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getBrand() {
@@ -73,11 +58,13 @@ public class Ad {
         this.price = price;
     }
 
-    public String getSeller() {
-        return seller;
-    }
-
-    public void setSeller(String seller) {
-        this.seller = seller;
+    @Override
+    public String toString() {
+        return "AdRequestDTO{" +
+                "brand='" + brand + '\'' +
+                ", type='" + type + '\'' +
+                ", description='" + description + '\'' +
+                ", price=" + price +
+                '}';
     }
 }
