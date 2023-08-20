@@ -3,8 +3,6 @@ package org.nagyza.cardealer.security;
 
 import org.nagyza.cardealer.model.security.User;
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,7 +12,6 @@ import org.springframework.web.util.WebUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.security.Key;
 import java.util.Date;
 
 @Component
@@ -33,14 +30,14 @@ public class JwtUtils {
     @Value("${cardealer.app.jwtRefreshCookieName}")
     private String jwtRefreshCookie;
 
-    public ResponseCookie generateJwtCookie(UserDetailsImpl userPrincipal) {
+    public ResponseCookie generateJwtCookie(UserDetailsImpl userPrincipal, String path) {
         String jwt = generateTokenFromUsername(userPrincipal.getUsername());
-        return generateCookie(jwtCookie, jwt, "/ad");
+        return generateCookie(jwtCookie, jwt, path);
     }
 
-    public ResponseCookie generateJwtCookie(User user) {
+    public ResponseCookie generateJwtCookie(User user, String path) {
         String jwt = generateTokenFromUsername(user.getUsername());
-        return generateCookie(jwtCookie, jwt, "/ad");
+        return generateCookie(jwtCookie, jwt, path);
     }
 
     public ResponseCookie generateRefreshJwtCookie(String refreshToken) {
@@ -55,8 +52,8 @@ public class JwtUtils {
         return getCookieValueByName(request, jwtRefreshCookie);
     }
 
-    public ResponseCookie getCleanJwtCookie() {
-        return ResponseCookie.from(jwtCookie, null).path("/ad").build();
+    public ResponseCookie getCleanJwtCookie(String path) {
+        return ResponseCookie.from(jwtCookie, null).path(path).build();
     }
 
     public ResponseCookie getCleanJwtRefreshCookie() {

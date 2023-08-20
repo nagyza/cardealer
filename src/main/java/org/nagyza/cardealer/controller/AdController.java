@@ -4,8 +4,6 @@ import org.nagyza.cardealer.dto.AdDTO;
 import org.nagyza.cardealer.dto.AdRequestDTO;
 import org.nagyza.cardealer.model.Ad;
 import org.nagyza.cardealer.service.AdService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +18,6 @@ import java.util.List;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 public class AdController {
-    private final Logger logger = LoggerFactory.getLogger(AdController.class);
-
     private final AdService adService;
 
     @Autowired
@@ -32,11 +28,8 @@ public class AdController {
     @GetMapping(path = "ad/{id}", produces = "application/json")
     public ResponseEntity<AdDTO> getAd(@PathVariable(name = "id") Long id) {
 
-        logger.info("Get ad called. Id is: " + id);
         AdDTO ad = adService.getAdById(id);
-        if (ad != null) {
-            logger.info(ad.toString());
-        } else {
+        if (ad == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(ad, HttpStatus.OK);
@@ -50,7 +43,7 @@ public class AdController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping(path = "ad", consumes = "application/json", produces = "application/json")
     public ResponseEntity<URI> addAd(@RequestBody @Valid AdRequestDTO adRequestDTO) throws URISyntaxException {
-        String adBasePath = "http://localhost:8080/ad/";
+        String adBasePath = "http://localhost:8080/ad/"; // todo
         Ad ad = adService.postAd(adRequestDTO);
 
         if (ad != null) {

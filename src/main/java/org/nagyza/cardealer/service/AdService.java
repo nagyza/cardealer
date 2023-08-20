@@ -4,8 +4,6 @@ import org.nagyza.cardealer.dto.AdDTO;
 import org.nagyza.cardealer.dto.AdRequestDTO;
 import org.nagyza.cardealer.model.Ad;
 import org.nagyza.cardealer.repository.AdRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,7 +18,6 @@ import java.util.stream.Collectors;
 @Service
 public class AdService {
 
-    private final Logger logger = LoggerFactory.getLogger(AdService.class);
     private final AdRepository adRepository;
 
     @Autowired
@@ -53,23 +50,14 @@ public class AdService {
     }
 
     public Ad postAd(AdRequestDTO adRequestDTO) {
-        logger.info(adRequestDTO.toString());
         return adRepository.save(new Ad(adRequestDTO.getBrand(), adRequestDTO.getType(),
                 adRequestDTO.getDescription(), adRequestDTO.getPrice(), getUserDetails().getUsername()));
     }
 
-    public void deleteAd(Long id) throws Exception {
+    public void deleteAd(Long id) {
         UserDetails userDetails = getUserDetails();
-        logger.info("Current user: " + userDetails.getUsername());
-
         AdDTO ad = getAdById(id);
-
-        if (ad != null) {
-            logger.info("Owner: " + ad.getSeller());
-        }
-
         boolean hasRightToDelete = ad != null && ad.getSeller().equals(userDetails.getUsername());
-
         if (hasRightToDelete) {
             adRepository.deleteById(id);
         } else {
@@ -77,7 +65,7 @@ public class AdService {
         }
     }
 
-    private static UserDetails getUserDetails() {
+    public static UserDetails getUserDetails() {
         return (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }
