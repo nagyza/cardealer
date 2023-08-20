@@ -80,8 +80,4 @@ public class AdService {
     private static UserDetails getUserDetails() {
         return (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
-
-    public boolean isExist(Long id) {
-        return adRepository.existsById(id);
-    }
 }

@@ -13,9 +13,4 @@ public class BcryptTest {
         String encoded = passwordEncoder.encode("pp");
         System.out.println(encoded);
     }
-
-
-
-
-
 }
