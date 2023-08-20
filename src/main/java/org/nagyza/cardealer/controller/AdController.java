@@ -9,6 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -16,6 +19,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 public class AdController {
     private final Logger logger = LoggerFactory.getLogger(AdController.class);
@@ -31,7 +35,7 @@ public class AdController {
     public ResponseEntity<AdDTO> getAd(@PathVariable(name = "id") Long id) {
 
         logger.info("Get ad called. Id is: " + id);
-        AdDTO ad = adService.getAd(id);
+        AdDTO ad = adService.getAdById(id);
         if (ad != null) {
             logger.info(ad.toString());
         } else {
@@ -45,6 +49,9 @@ public class AdController {
         return new ResponseEntity<>(adService.searchAds(query), HttpStatus.OK);
     }
 
+
+
+    @PreAuthorize("hasRole('USER')")
     @PostMapping(path = "ad", consumes = "application/json", produces = "application/json")
     public ResponseEntity<URI> addAd(@RequestBody @Valid AdRequestDTO adRequestDTO) throws URISyntaxException {
         String adBasePath = "http://localhost:8080/ad/";
@@ -54,16 +61,13 @@ public class AdController {
             URI uri = new URI(adBasePath + ad.getId());
             return new ResponseEntity<>(uri ,HttpStatus.CREATED);
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST); //todo
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
+    @PreAuthorize("hasRole('USER')")
     @DeleteMapping(path = "ad/{id}")
     public ResponseEntity<?> deleteAd(@PathVariable(name = "id") Long id) throws Exception {
-        if (adService.isExist(id)) {
-            //todo check owner
-            adService.deleteAd(id);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST); //todo
+        adService.deleteAd(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

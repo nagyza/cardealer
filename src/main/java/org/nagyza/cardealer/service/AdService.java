@@ -7,7 +7,11 @@ import org.nagyza.cardealer.repository.AdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,14 +36,13 @@ public class AdService {
                 .collect(Collectors.toList());
     }
 
-    public AdDTO getAd(Long id) {
+    public AdDTO getAdById(Long id) {
 
         Optional<Ad> byId = adRepository.findById(id);
 
         AdDTO result;
         if (byId.isPresent()) {
             Ad ad = byId.get();
-
             result = new AdDTO(ad.getId(), ad.getBrand(), ad.getType(), ad.getDescription(), ad.getPrice(), ad.getSeller());
 
         } else {
@@ -51,11 +54,31 @@ public class AdService {
 
     public Ad postAd(AdRequestDTO adRequestDTO) {
         logger.info(adRequestDTO.toString());
-        return adRepository.save(new Ad(adRequestDTO.getBrand(), adRequestDTO.getType(), adRequestDTO.getDescription(), adRequestDTO.getPrice(), "user"));
+        return adRepository.save(new Ad(adRequestDTO.getBrand(), adRequestDTO.getType(),
+                adRequestDTO.getDescription(), adRequestDTO.getPrice(), getUserDetails().getUsername()));
     }
 
     public void deleteAd(Long id) throws Exception {
-        adRepository.deleteById(id);
+        UserDetails userDetails = getUserDetails();
+        logger.info("Current user: " + userDetails.getUsername());
+
+        AdDTO ad = getAdById(id);
+
+        if (ad != null) {
+            logger.info("Owner: " + ad.getSeller());
+        }
+
+        boolean hasRightToDelete = ad != null && ad.getSeller().equals(userDetails.getUsername());
+
+        if (hasRightToDelete) {
+            adRepository.deleteById(id);
+        } else {
+            throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "No right to delete this ad.");
+        }
+    }
+
+    private static UserDetails getUserDetails() {
+        return (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
     public boolean isExist(Long id) {
