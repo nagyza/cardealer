@@ -37,7 +37,7 @@ public class AdController {
         if (ad != null) {
             logger.info(ad.toString());
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); //todo
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(ad, HttpStatus.OK);
     }
