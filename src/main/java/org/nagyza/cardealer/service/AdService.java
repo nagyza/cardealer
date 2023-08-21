@@ -54,14 +54,14 @@ public class AdService {
                 adRequestDTO.getDescription(), adRequestDTO.getPrice(), getUserDetails().getUsername()));
     }
 
-    public void deleteAd(Long id) {
+    public void deleteAd(Long id) throws UnsupportedOperationException {
         UserDetails userDetails = getUserDetails();
         AdDTO ad = getAdById(id);
         boolean hasRightToDelete = ad != null && ad.getSeller().equals(userDetails.getUsername());
         if (hasRightToDelete) {
             adRepository.deleteById(id);
         } else {
-            throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "No right to delete this ad.");
+            throw new UnsupportedOperationException("You have no right to delete this ad.");
         }
     }
 
