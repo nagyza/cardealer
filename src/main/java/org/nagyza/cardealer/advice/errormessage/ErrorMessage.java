@@ -1,4 +1,4 @@
-package org.nagyza.cardealer.advice.ErrorMessage;
+package org.nagyza.cardealer.advice.errormessage;
 
 import java.util.Date;
 
