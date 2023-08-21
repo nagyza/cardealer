@@ -2,6 +2,7 @@ package org.nagyza.cardealer.controller;
 
 import org.nagyza.cardealer.dto.AdDTO;
 import org.nagyza.cardealer.dto.AdRequestDTO;
+import org.nagyza.cardealer.dto.MessageResponse;
 import org.nagyza.cardealer.model.Ad;
 import org.nagyza.cardealer.service.AdService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,8 +56,13 @@ public class AdController {
 
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping(path = "ad/{id}")
-    public ResponseEntity<?> deleteAd(@PathVariable(name = "id") Long id) throws Exception {
-        adService.deleteAd(id);
+    public ResponseEntity<?> deleteAd(@PathVariable(name = "id") Long id) {
+        try {
+            adService.deleteAd(id);
+        } catch (UnsupportedOperationException e) {
+            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.FORBIDDEN);
+        }
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
